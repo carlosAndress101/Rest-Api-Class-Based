@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const router  = require('../routes/user.routes');
+const path = require('path');
 
 class Server{
 
@@ -26,7 +27,7 @@ class Server{
          this.app.use( express.json() );
 
         //directorio publico
-        this.app.use(express.static('public'))
+        this.app.use(express.static(path.join(__dirname, '../../public')))
     }
 
     routes(){
