@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const router  = require('../routes/user.routes');
 const path = require('path');
+const connection = require('../database/config.db');
 
 class Server{
 
@@ -11,11 +12,18 @@ class Server{
         this.userPath = '/api/user';
         this.origin = 'http://localhost:';
 
+        //connection data base
+        this.connectionDB();
+
         //middleware
         this.middlewares();
 
         //routes de mi app
         this.routes();
+    }
+
+    async connectionDB(){
+        await connection();
     }
 
     middlewares(){
