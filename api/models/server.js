@@ -38,6 +38,7 @@ class Server{
         this.app.use(express.static(path.join(__dirname, '../../public')))
     }
 
+    //routes
     routes(){
         this.app.use(this.userPath, router)
     }
