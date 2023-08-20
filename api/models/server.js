@@ -1,7 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-const router  = require('../routes/user.routes');
 const path = require('path');
+const cors = require('cors');
+const express = require('express');
+const router  = require('../routes/user.routes');
 const connection = require('../database/config.db');
 
 class Server{
