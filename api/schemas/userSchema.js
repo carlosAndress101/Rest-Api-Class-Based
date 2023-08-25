@@ -1,7 +1,9 @@
 const Joi = require("joi");
-const Role = require("../models/role");
-const {existEmail} = require("../middleware/validate-fields");
+const boom = require("@hapi/boom");
 const mongoose = require('mongoose');
+const Role = require("../models/role");
+const User = require("../models/user");
+const { existEmail } = require("../middleware/validate-fields");
 
 const id = Joi.string();
 const name = Joi.string().min(3);
@@ -75,9 +77,35 @@ const updateUserSchema = Joi.object({
   }),
 });
 
+const deleteUserSchama = Joi.object({
+  _id: id.custom((value)=> {
+    try {
+      if(!mongoose.Types.ObjectId.isValid(value)){
+        throw boom.badRequest(`any.invalid -> ${value}`);
+      }
+      return value;
+    } catch (error) {
+      return error
+    }
+  }).custom(async (id) => {
+    try {
+      const user = await User.findById(id)
+      if(!user){
+        throw new Error('User not found');
+      }
+    } catch (error) {
+      return error;
+    }
+  }).messages({
+    "string.pattern.base": "El ID debe tener el formato adecuado",
+  }),
+})
+
+
 
 
 module.exports = {
   createUserSchema,
   updateUserSchema,
+  deleteUserSchama
 };

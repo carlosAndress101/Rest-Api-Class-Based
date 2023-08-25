@@ -3,13 +3,18 @@ const { request, response } = require("express");
 const User = require("../models/user");
 
 const validateFields = (schema, req = request, res = response, next) => {
-  const validationResult = schema.validate(req.body);
+  try {
+    const validationResult = schema.validate(req.body);
 
-  if (validationResult.error) {
-    const errorMessage = validationResult.error.details[0].message;
-    return res.status(400).json({ error: errorMessage });
+    if (validationResult.error) {
+      const errorMessage = validationResult.error.details[0].message;
+      return res.status(400).json({ error: errorMessage });
+    }
+    next();
+  } catch (error) {
+    console.log(error);
+    return error;
   }
-  next();
 };
 
 const existEmail = async (email) => {
@@ -23,15 +28,9 @@ const existEmail = async (email) => {
   }
 };
 
-// const existUserById = async (id) => {
-//   const existUser = await User.findById(id);
-//   if (!existUser) {
-//     throw new Error(`This id ${id} not exists`);
-//   }
-// };
+
 
 module.exports = {
   validateFields,
   existEmail,
-  //existUserById
 };

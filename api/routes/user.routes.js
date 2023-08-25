@@ -3,10 +3,10 @@ const {
   getAllUsers,
   createUser,
   updateUser,
-  initDelete,
+  deleteUser,
 } = require("../controllers/user.controller");
-const { createUserSchema, updateUserSchema } = require("../schemas/userSchema");
-const { validateFields, existUserById } = require("../middleware/validate-fields");
+const { createUserSchema, updateUserSchema, deleteUserSchama } = require("../schemas/userSchema");
+const { validateFields } = require("../middleware/validate-fields");
 
 const router = Router();
 
@@ -21,6 +21,8 @@ router.put("/:id", (req, res, next) => {
   validateFields(updateUserSchema, req, res, next)
 }, updateUser);
 
-router.delete("/", initDelete);
+router.delete("/:id", (req, res, next) => {
+  validateFields(deleteUserSchama, req, res, next)
+}, deleteUser);
 
 module.exports = router;
