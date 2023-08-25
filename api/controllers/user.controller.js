@@ -1,15 +1,15 @@
 const bcrypt = require("bcrypt");
-const boom = require("@hapi/boom");
 const User = require("../models/user");
 const { response, request } = require("express");
+const { all } = require("../routes/user.routes");
 
-const initGet = (req = request, res = response) => {
-  const { q, nombre, apiKey } = req.query;
+const getAllUsers = async (req = request, res = response) => {
+  const { limit = 5} = req.query;
+  const allUser = await User.find().limit(limit);
+  const numUser = allUser.length
   res.json({
-    message: "Hello Server Obtener",
-    q,
-    nombre,
-    apiKey,
+    numUser,
+    allUser
   });
 };
 
@@ -30,11 +30,19 @@ const createUser = async (req = request, res = response) => {
   }
 };
 
-const initPut = (req = request, res = response) => {
-  const id = req.params;
+const updateUser = async (req = request, res = response) => {
+  const { id } = req.params;
+  const { _id, password, google, ...data } = req.body;
+
+  //TODO validar contra base de datos
+  if( password ){
+    //Encript password
+    data.password = await bcrypt.hash(password, 10);
+  }
+
+  const user = await User.findByIdAndUpdate(id, data);
   res.json({
-    message: "Hello Server Update",
-    id,
+    user,
   });
 };
 
@@ -45,8 +53,8 @@ const initDelete = (req, res = response) => {
 };
 
 module.exports = {
-  initGet,
+  getAllUsers,
   createUser,
-  initPut,
+  updateUser,
   initDelete,
 };

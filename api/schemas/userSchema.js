@@ -1,8 +1,9 @@
 const Joi = require("joi");
 const Role = require("../models/role");
 const {existEmail} = require("../middleware/validate-fields");
-const { response } = require("express");
+const mongoose = require('mongoose');
 
+const id = Joi.string();
 const name = Joi.string().min(3);
 const email = Joi.string().email();
 const password = Joi.string().min(8);
@@ -43,6 +44,40 @@ const createUserSchema = Joi.object({
     }),
 });
 
+const updateUserSchema = Joi.object({
+  _id: id.custom((value, helpers)=> {
+    if(!mongoose.Types.ObjectId.isValid(value)){
+      return helpers.error(`any.invalid -> ${value}`)
+    }
+    return value;
+  }),
+  name: name.messages({
+    "string.base": "El nombre de usuario debe ser un texto",
+    "string.min": "El nombre de usuario debe tener al menos 3 caracteres",
+  }),
+  email: email.messages({
+    "string.base": "El correo electrónico debe ser un texto",
+    "string.email": "El formato del correo electrónico es inválido",
+  }),
+  role: role.custom(async (role) => {
+    try {
+      const data = await Role.findOne({ role });
+      if (!data) {
+        throw new Error(`El rol ${role} no está registrado`);
+      }
+    } catch (error) {
+      throw new Error("Error al obtener roles válidos");
+    }
+  })
+  .messages({
+    "string.base": "El role debe ser un texto",
+    "string.min": "El role debe tener al menos 8 caracteres"
+  }),
+});
+
+
+
 module.exports = {
   createUserSchema,
+  updateUserSchema,
 };

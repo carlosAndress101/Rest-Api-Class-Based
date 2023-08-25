@@ -1,23 +1,26 @@
 const { Router } = require("express");
 const {
-  initGet,
+  getAllUsers,
   createUser,
-  initPut,
+  updateUser,
   initDelete,
 } = require("../controllers/user.controller");
-const { createUserSchema } = require("../schemas/userSchema");
-const { validateFields } = require("../middleware/validate-fields");
+const { createUserSchema, updateUserSchema } = require("../schemas/userSchema");
+const { validateFields, existUserById } = require("../middleware/validate-fields");
 
 const router = Router();
 
-router.get("/", initGet);
+router.get("/", getAllUsers);
 
 router.post("/", (req, res, next) => {
   validateFields(createUserSchema, req, res, next);
 }, createUser);
 
 
-router.put("/:id", initPut);
+router.put("/:id", (req, res, next) => {
+  validateFields(updateUserSchema, req, res, next)
+}, updateUser);
+
 router.delete("/", initDelete);
 
 module.exports = router;
